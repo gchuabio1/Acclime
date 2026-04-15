@@ -1,13 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My HTML Reference</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Pages</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      background: #f6f8fb;
+      color: #222;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: 32px;
+    }
+
+    p {
+      margin-top: 0;
+      margin-bottom: 30px;
+      color: #666;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      display: block;
+      padding: 24px;
+      background: white;
+      border-radius: 16px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+    }
+
+    .card h2 {
+      margin: 0 0 10px 0;
+      font-size: 20px;
+    }
+
+    .card span {
+      color: #555;
+      font-size: 14px;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 13px;
+      color: #888;
+    }
+  </style>
 </head>
 <body>
-  <h1>My Pages</h1>
-  <ul>
-    <li><a href="agentic_architecture.html">agentic_architecture</a></li>
-    <li><a href="acclime_cybersecurity_report.html">acclime_cybersecurity_report</a></li>
-  </ul>
+  <div class="container">
+    <h1>My Pages</h1>
+    <p>Reference pages hosted on GitHub Pages</p>
+
+    <div class="grid">
+      <a class="card" href="agentic_architecture.html">
+        <h2>Agentic_architecture</h2>
+        <span>Open the first reference file</span>
+      </a>
+
+      <a class="card" href="acclime_cybersecurity_report.html">
+        <h2>Acclime_cybersecurity_report</h2>
+        <span>Open the second reference file</span>
+      </a>
+    </div>
+
+    <div class="footer">
+      Hosted with GitHub Pages
+    </div>
+  </div>
 </body>
 </html>
