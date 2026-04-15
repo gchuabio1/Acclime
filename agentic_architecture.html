@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic AI Platform Architecture — Warburg Pincus</title>
+<style>
+  :root {
+    --teal:    #0F6E56; --teal-l: #E1F5EE; --teal-m: #5DCAA5;
+    --purple:  #3C3489; --purple-l: #EEEDFE; --purple-m: #AFA9EC;
+    --amber:   #633806; --amber-l: #FAEEDA; --amber-m: #EF9F27;
+    --blue:    #0C447C; --blue-l: #E6F1FB; --blue-m: #85B7EB;
+    --coral:   #712B13; --coral-l: #FAECE7; --coral-m: #F0997B;
+    --gray:    #444441; --gray-l: #F1EFE8; --gray-m: #B4B2A9;
+    --green:   #3B6D11; --green-l: #EAF3DE; --green-m: #97C459;
+    --text:    #1D1D1B; --text2: #5F5E5A; --text3: #888780;
+    --bg:      #FFFFFF; --bg2: #F8F7F4; --border: #E0DED8;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.7; }
+
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; gap: 2rem; height: 56px; }
+  nav .logo { font-weight: 700; font-size: 14px; color: var(--teal); letter-spacing: 0.04em; white-space: nowrap; }
+  nav a { font-size: 13px; color: var(--text2); text-decoration: none; white-space: nowrap; }
+  nav a:hover { color: var(--teal); }
+  nav .nav-links { display: flex; gap: 1.5rem; overflow-x: auto; }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, #0F6E56 0%, #0C447C 100%); color: white; padding: 5rem 2rem 4rem; text-align: center; }
+  .hero .tag { display: inline-block; background: rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; margin-bottom: 1.5rem; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+  .hero p { font-size: 1.1rem; opacity: 0.85; max-width: 640px; margin: 0 auto 2rem; }
+  .hero .meta { font-size: 13px; opacity: 0.6; }
+
+  /* LAYOUT */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+  section { padding: 4rem 0; }
+  section:nth-child(even) { background: var(--bg2); }
+
+  /* SECTION HEADERS */
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .section-title { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 700; margin-bottom: 0.75rem; }
+  .section-sub { font-size: 1rem; color: var(--text2); max-width: 700px; margin-bottom: 2.5rem; line-height: 1.7; }
+
+  /* ZONE CARDS */
+  .zone-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
+  .zone-card { border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border); background: white; }
+  .zone-card .zone-num { display: inline-block; border-radius: 6px; padding: 2px 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+  .zone-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .zone-card p { font-size: 0.875rem; color: var(--text2); margin-bottom: 0.75rem; }
+  .zone-card ul { list-style: none; padding: 0; }
+  .zone-card ul li { font-size: 0.825rem; color: var(--text2); padding: 3px 0 3px 14px; position: relative; line-height: 1.5; }
+  .zone-card ul li::before { content: "·"; position: absolute; left: 0; font-weight: 700; }
+
+  /* FLOW DIAGRAM */
+  .flow { display: flex; flex-direction: column; gap: 0; }
+  .flow-step { display: flex; gap: 1.25rem; align-items: flex-start; position: relative; padding-bottom: 2rem; }
+  .flow-step:last-child { padding-bottom: 0; }
+  .flow-step:last-child .flow-line { display: none; }
+  .flow-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 48px; }
+  .flow-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  .flow-line { width: 2px; flex: 1; min-height: 40px; background: var(--border); margin-top: 4px; }
+  .flow-body { flex: 1; padding-top: 4px; }
+  .flow-body h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .flow-body p { font-size: 0.85rem; color: var(--text2); line-height: 1.6; }
+  .flow-body .badge { display: inline-block; border-radius: 4px; padding: 1px 8px; font-size: 11px; font-weight: 600; margin-right: 4px; margin-top: 6px; }
+
+  /* CALLOUT */
+  .callout { border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; border-left: 4px solid; }
+  .callout .callout-label { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .callout p { font-size: 0.9rem; line-height: 1.65; }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0; }
+  .col-card { border-radius: 10px; padding: 1.25rem; border: 1px solid var(--border); }
+  .col-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; }
+  .col-card ul { list-style: none; padding: 0; }
+  .col-card ul li { font-size: 0.825rem; color: var(--text2); padding: 4px 0 4px 16px; position: relative; line-height: 1.5; border-bottom: 1px solid var(--border); }
+  .col-card ul li:last-child { border-bottom: none; }
+  .col-card ul li::before { content: "→"; position: absolute; left: 0; font-size: 11px; top: 5px; }
+
+  /* PATTERN CARDS */
+  .pattern-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+  .pattern-card { border-radius: 10px; padding: 1.25rem; border: 1px solid var(--border); position: relative; }
+  .pattern-card .p-num { font-size: 2rem; font-weight: 800; opacity: 0.12; position: absolute; top: 0.75rem; right: 1rem; }
+  .pattern-card h4 { font-size: 0.875rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .pattern-card .p-scale { font-size: 11px; font-weight: 500; border-radius: 4px; padding: 1px 8px; display: inline-block; margin-bottom: 0.75rem; }
+  .pattern-card p { font-size: 0.825rem; color: var(--text2); line-height: 1.6; margin-bottom: 0.75rem; }
+  .pattern-card .trigger { font-size: 11px; color: var(--amber); font-style: italic; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+
+  /* ARCH OVERVIEW */
+  .arch-overview { border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
+  .arch-row { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
+  .arch-row:last-child { border-bottom: none; }
+  .arch-row .arch-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .arch-row h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .arch-row p { font-size: 0.825rem; color: var(--text2); }
+  .arch-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.6rem; }
+  .chip { border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); }
+
+  /* TWO PLANE */
+  .two-plane { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0; }
+  .plane-card { border-radius: 12px; padding: 1.5rem; border: 2px solid; }
+  .plane-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .plane-card .plane-sub { font-size: 11px; font-weight: 500; margin-bottom: 1rem; opacity: 0.8; }
+  .plane-card ul { list-style: none; padding: 0; }
+  .plane-card ul li { font-size: 0.825rem; padding: 5px 0 5px 16px; position: relative; line-height: 1.5; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .plane-card ul li:last-child { border-bottom: none; }
+  .plane-card ul li::before { content: "→"; position: absolute; left: 0; font-size: 11px; top: 6px; }
+
+  /* PRINCIPLES */
+  .principles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+  .principle-card { border-radius: 10px; padding: 1.25rem; border: 1px solid var(--border); background: white; }
+  .principle-card .p-label { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .principle-card p { font-size: 0.85rem; color: var(--text2); line-height: 1.65; }
+
+  /* FOOTER */
+  footer { background: var(--text); color: rgba(255,255,255,0.6); padding: 2.5rem 2rem; text-align: center; font-size: 13px; }
+  footer strong { color: white; }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .two-col, .two-plane { grid-template-columns: 1fr; }
+    nav .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">WP · Agentic Architecture</div>
+  <div class="nav-links">
+    <a href="#overview">Overview</a>
+    <a href="#zones">Zones</a>
+    <a href="#handoff">2A→2B Handoff</a>
+    <a href="#usecase">Invoice Use Case</a>
+    <a href="#rules">Approval Rules</a>
+    <a href="#gateway">Tool Gateway</a>
+    <a href="#patterns">Integration Patterns</a>
+    <a href="#hybrid">Hybrid Architecture</a>
+    <a href="#principles">Principles</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="tag">WARBURG PINCUS · APRIL 2026</div>
+  <h1>Agentic AI Platform Architecture</h1>
+  <p>A comprehensive reference guide covering the full architecture, use cases, integration patterns, and hybrid design for enterprise agentic AI deployment.</p>
+  <div class="meta">Based on the tech-agnostic agentic architecture framework · 9 topics covered</div>
+</div>
+
+<!-- SECTION 1: OVERVIEW -->
+<section id="overview">
+  <div class="container">
+    <div class="section-label" style="color:var(--teal)">Section 1</div>
+    <div class="section-title">Architecture Overview</div>
+    <div class="section-sub">The platform is designed to run AI agents that can autonomously plan, act, and complete multi-step tasks. It has five major zones, each with a distinct role — from accepting inbound traffic to governing how the platform is built and changed.</div>
+
+    <div class="arch-overview">
+      <div class="arch-row" style="background:var(--teal-l)">
+        <div class="arch-label" style="color:var(--teal)">Zone 1</div>
+        <h4>Channel & Access — The front door</h4>
+        <p>All external traffic enters here. Authentication via SSO/OIDC, rate limiting, WAF protection. User identity is propagated as immutable context downstream.</p>
+        <div class="arch-chips">
+          <span class="chip" style="background:white;color:var(--teal)">API Gateway</span>
+          <span class="chip" style="background:white;color:var(--teal)">SSO / OIDC</span>
+          <span class="chip" style="background:white;color:var(--teal)">Rate Limiting</span>
+          <span class="chip" style="background:white;color:var(--teal)">Messaging Gateway</span>
+          <span class="chip" style="background:white;color:var(--teal)">WAF</span>
+        </div>
+      </div>
+      <div class="arch-row" style="background:var(--purple-l)">
+        <div class="arch-label" style="color:var(--purple)">Zone 2</div>
+        <h4>Orchestration Engine — The brain (four sub-layers)</h4>
+        <p>2A: Agent Gateway (intent classification, routing, session hydration) · 2B: Durable Execution (state machines, approval gates, HITL) · 2C: LLM Layer (model routing, caching, metering) · 2D: Tool Layer (single outbound boundary for all agent actions)</p>
+        <div class="arch-chips">
+          <span class="chip" style="background:white;color:var(--purple)">Intent Classifier</span>
+          <span class="chip" style="background:white;color:var(--purple)">ReAct Loop</span>
+          <span class="chip" style="background:white;color:var(--purple)">State Machines</span>
+          <span class="chip" style="background:white;color:var(--purple)">Approval Gates</span>
+          <span class="chip" style="background:white;color:var(--purple)">Tool Gateway</span>
+          <span class="chip" style="background:white;color:var(--purple)">Model Router</span>
+        </div>
+      </div>
+      <div class="arch-row" style="background:var(--amber-l)">
+        <div class="arch-label" style="color:var(--amber)">Zone 3</div>
+        <h4>Memory, Knowledge & Data — Institutional intelligence</h4>
+        <p>Agents know more than the current conversation. Vector store for semantic search, Knowledge Graph for document relationships, Skill Library for reusable procedures, Structured Data Store for business rules and thresholds.</p>
+        <div class="arch-chips">
+          <span class="chip" style="background:white;color:var(--amber)">Vector Store</span>
+          <span class="chip" style="background:white;color:var(--amber)">Knowledge Graph</span>
+          <span class="chip" style="background:white;color:var(--amber)">Skill Library</span>
+          <span class="chip" style="background:white;color:var(--amber)">Structured Data Store</span>
+          <span class="chip" style="background:white;color:var(--amber)">DataOps</span>
+        </div>
+      </div>
+      <div class="arch-row" style="background:var(--coral-l)">
+        <div class="arch-label" style="color:var(--coral)">Zone 4</div>
+        <h4>Guardrails & Governance — Non-negotiable safety net</h4>
+        <p>Wraps all zones. Input guards, output guards, step guards, HITL engine, agent identity management, and evaluation. Enforced regardless of workflow config — the hard stops that protect against misconfiguration.</p>
+        <div class="arch-chips">
+          <span class="chip" style="background:white;color:var(--coral)">Input Guards</span>
+          <span class="chip" style="background:white;color:var(--coral)">Output Guards</span>
+          <span class="chip" style="background:white;color:var(--coral)">Step Guards</span>
+          <span class="chip" style="background:white;color:var(--coral)">HITL Engine</span>
+          <span class="chip" style="background:white;color:var(--coral)">Agent Identity</span>
+        </div>
+      </div>
+      <div class="arch-row" style="background:var(--gray-l)">
+        <div class="arch-label" style="color:var(--gray)">Zone 5</div>
+        <h4>Infrastructure, Ops & Observability — Full traceability</h4>
+        <p>Every agent action is traced, metered, and auditable. Agent tracing, immutable audit log, Cost/FinOps per session, IaC provisioning, pre-built CI/CD pipelines.</p>
+        <div class="arch-chips">
+          <span class="chip" style="background:white;color:var(--gray)">Agent Tracing</span>
+          <span class="chip" style="background:white;color:var(--gray)">Audit Log</span>
+          <span class="chip" style="background:white;color:var(--gray)">Cost/FinOps</span>
+          <span class="chip" style="background:white;color:var(--gray)">IaC</span>
+          <span class="chip" style="background:white;color:var(--gray)">CI/CD</span>
+          <span class="chip" style="background:white;color:var(--gray)">Alerting</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: HANDOFF -->
+<section id="handoff">
+  <div class="container">
+    <div class="section-label" style="color:var(--purple)">Section 2</div>
+    <div class="section-title">Zone 2A → 2B Handoff</div>
+    <div class="section-sub">The most important seam in the architecture. Zone 2A is per-request (runs once, fast). Zone 2B is per-agent-lifetime (runs for as long as the task takes — potentially minutes or hours).</div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num" style="background:var(--purple-l);color:var(--purple)">1</div><div class="flow-line"></div></div>
+        <div class="flow-body"><h4>Intent Classifier (2A)</h4><p>Labels the request type, estimates complexity, and classifies intent. Determines whether this needs a simple agent or a multi-step workflow with approval gates.</p><span class="badge" style="background:var(--purple-l);color:var(--purple)">Zone 2A</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num" style="background:var(--purple-l);color:var(--purple)">2</div><div class="flow-line"></div></div>
+        <div class="flow-body"><h4>Agent Config & Registry (2A)</h4><p>Selects the correct agent and workflow blueprint. Binds the tools the agent is permitted to call for this workflow type.</p><span class="badge" style="background:var(--purple-l);color:var(--purple)">Zone 2A</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num" style="background:var(--purple-l);color:var(--purple)">3</div><div class="flow-line"></div></div>
+        <div class="flow-body"><h4>Session Manager (2A)</h4><p>Creates or resumes a session. Injects user identity, conversation history, vendor master data, approval thresholds, and prior context into the execution package.</p><span class="badge" style="background:var(--purple-l);color:var(--purple)">Zone 2A</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num" style="background:var(--teal-l);color:var(--teal)">→</div><div class="flow-line" style="background:var(--teal-m)"></div></div>
+        <div class="flow-body" style="background:var(--teal-l);border-radius:8px;padding:0.75rem 1rem;"><h4 style="color:var(--teal)">HANDOFF — Hydrated Context Package</h4><p>Agent ID · session history · classified intent · workflow blueprint · bound tools. 2A never needs to ask 2B a follow-up question. The package is complete.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num" style="background:var(--blue-l);color:var(--blue)">4</div><div class="flow-line"></div></div>
+        <div class="flow-body"><h4>Orchestrator receives context (2B)</h4><p>Instantiates the workflow as a state machine. Every step has a defined state, transitions are logged, and if something fails mid-way the system can resume from the last known good state.</p><span class="badge" style="background:var(--blue-l);color:var(--blue)">Zone 2B</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num" style="background:var(--blue-l);color:var(--blue)">5</div><div class="flow-line"></div></div>
+        <div class="flow-body"><h4>ReAct Loop — Supervisor/Planner (2B)</h4><p>Reason → Plan → Act → Observe → repeat. The agent decides what to do next, acts via the Tool Layer, observes the result, and re-plans. Can spawn Specialist Agents for subtasks.</p><span class="badge" style="background:var(--blue-l);color:var(--blue)">Zone 2B</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num" style="background:var(--amber-l);color:var(--amber)">⏸</div><div class="flow-line"></div></div>
+        <div class="flow-body"><h4>Approval Gate (2B) — if triggered</h4><p>Hard pause. Workflow state saved. HITL Engine notifies the correct human reviewer. On approval, execution resumes from saved state — no reprocessing of prior steps.</p><span class="badge" style="background:var(--amber-l);color:var(--amber)">Approval Gate</span><span class="badge" style="background:var(--amber-l);color:var(--amber)">HITL Engine</span></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num" style="background:var(--green-l);color:var(--green)">✓</div></div>
+        <div class="flow-body"><h4>Completion Gates (2B)</h4><p>Deterministic verification before final commit. No LLM involved — pure rules-based check. Only after this passes does the action take effect in the real world.</p><span class="badge" style="background:var(--green-l);color:var(--green)">Zone 2B</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: USE CASE -->
+<section id="usecase">
+  <div class="container">
+    <div class="section-label" style="color:var(--teal)">Section 3</div>
+    <div class="section-title">Use Case — Invoice 3-Way Match & ERP Posting</div>
+    <div class="section-sub">A concrete walkthrough of the architecture handling a real accounts payable workflow: verifying an invoice against a PO, Delivery Note, and Goods Receipt Note, then posting to Xero and updating GL ledgers.</div>
+
+    <div class="zone-grid">
+      <div class="zone-card" style="border-top:3px solid var(--teal)">
+        <div class="zone-num" style="background:var(--teal-l);color:var(--teal)">ZONE 1</div>
+        <h3>Invoice received</h3>
+        <p>INV-2891 from ABC Supplies Pte Ltd for SGD 48,500 arrives via AP inbox. SSO identifies receiving entity. Invoice parsed and tokenised.</p>
+      </div>
+      <div class="zone-card" style="border-top:3px solid var(--purple)">
+        <div class="zone-num" style="background:var(--purple-l);color:var(--purple)">ZONE 2A</div>
+        <h3>Agent Gateway</h3>
+        <p>Intent: <code>accounts_payable / 3-way-match / erp_posting</code>. Agent selected: AP-Matching-Agent v2.1. Session created. Tools bound: ERP-Connector, DocStore-Connector, GL-Writer.</p>
+      </div>
+      <div class="zone-card" style="border-top:3px solid var(--blue)">
+        <div class="zone-num" style="background:var(--blue-l);color:var(--blue)">STATE 1–4</div>
+        <h3>3-Way Match</h3>
+        <p>PO-7741: SGD 49,200 within 2% tolerance ✓ · DN-3310: 12 SKUs delivered ✓ · GRN-0892: 12 SKUs receipted ✓</p>
+      </div>
+      <div class="zone-card" style="border-top:3px solid var(--amber)">
+        <div class="zone-num" style="background:var(--amber-l);color:var(--amber)">GATE</div>
+        <h3>Approval Gate</h3>
+        <p>SGD 48,500 exceeds auto-approve limit (SGD 10,000). Workflow paused. AP Manager notified and approves. Workflow resumes.</p>
+      </div>
+      <div class="zone-card" style="border-top:3px solid var(--green)">
+        <div class="zone-num" style="background:var(--green-l);color:var(--green)">STATE 5–6</div>
+        <h3>Post to Xero + GL</h3>
+        <p>Xero Bill BILL-XR-00421 created. GL journal posted: Dr Inventory SGD 48,500 / Cr AP (ABC Supplies) SGD 48,500. Double-entry balanced.</p>
+      </div>
+      <div class="zone-card" style="border-top:3px solid var(--gray)">
+        <div class="zone-num" style="background:var(--gray-l);color:var(--gray)">ZONE 5</div>
+        <h3>Full audit trail</h3>
+        <p>Every state transition, tool call, HITL decision, and GL entry immutably recorded. Full ReAct reasoning trace captured — explainable to auditors.</p>
+      </div>
+    </div>
+
+    <div class="callout" style="background:var(--purple-l);border-color:var(--purple);margin-top:2rem">
+      <div class="callout-label" style="color:var(--purple)">Key design insight</div>
+      <p style="color:var(--purple)">The agent never directly commits financial transactions. It builds the payload, and a deterministic Completion Gate fires it after rules-based verification. The LLM reasons — the gate acts.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: RULES -->
+<section id="rules">
+  <div class="container">
+    <div class="section-label" style="color:var(--amber)">Section 4</div>
+    <div class="section-title">Where Approval Gate Rules Are Stored</div>
+    <div class="section-sub">Rules are split across three zones, each handling a different type. They are evaluated in sequence at runtime. Keeping them separate means each team can update their layer independently.</div>
+
+    <div class="two-col">
+      <div class="col-card" style="background:var(--purple-l);border-color:var(--purple-m)">
+        <h4 style="color:var(--purple)">Zone 2B — Structural rules</h4>
+        <ul>
+          <li>Which steps require a gate</li>
+          <li>Approver role (ap_manager, cfo)</li>
+          <li>Timeout duration and escalation path</li>
+          <li>Owned by: engineering team</li>
+          <li>Changes: infrequently via CI/CD</li>
+        </ul>
+      </div>
+      <div class="col-card" style="background:var(--amber-l);border-color:var(--amber-m)">
+        <h4 style="color:var(--amber)">Zone 3 — Business rules & thresholds</h4>
+        <ul>
+          <li>Monetary thresholds by entity and level</li>
+          <li>Delegation of Authority (DoA) matrix</li>
+          <li>Risk flags: first-time vendor, variance, duplicate</li>
+          <li>Owned by: finance and ops teams</li>
+          <li>Changes: via Admin UI with maker-checker</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-card" style="background:var(--coral-l);border-color:var(--coral-m);margin-top:0">
+      <h4 style="color:var(--coral)">Zone 4 — Hard stops (non-negotiable)</h4>
+      <ul style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+        <li>Agent identity scoped — AP agent cannot reach payroll</li>
+        <li>Absolute ceiling enforced regardless of workflow config</li>
+        <li>GL payload must balance (Dr = Cr) before Xero call fires</li>
+        <li>Owned by: security and compliance team</li>
+      </ul>
+    </div>
+
+    <div class="callout" style="background:var(--teal-l);border-color:var(--teal);margin-top:1.5rem">
+      <div class="callout-label" style="color:var(--teal)">Zone 3 Update Pathways</div>
+      <p style="color:var(--teal-dark,#085041)"><strong>1. Admin UI:</strong> Finance team updates thresholds via governed portal — maker-checker enforced, second approver required. &nbsp;|&nbsp; <strong>2. Automated ingestion:</strong> Every completed transaction feeds back automatically via DataOps pipelines. &nbsp;|&nbsp; <strong>3. Workflow capture:</strong> Agent observes HITL decisions, proposes rule updates — humans promote, never the agent. &nbsp;|&nbsp; <strong>4. Engineering deployment:</strong> Skill Library and schema changes via full CI/CD with code review.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: TOOL GATEWAY -->
+<section id="gateway">
+  <div class="container">
+    <div class="section-label" style="color:var(--blue)">Section 5</div>
+    <div class="section-title">The Tool Gateway</div>
+    <div class="section-sub">Two gateways, two directions. The API Gateway handles all inbound traffic from external users into the platform. The Tool Gateway handles all outbound traffic from agents to any target system — internal or external.</div>
+
+    <div class="two-plane">
+      <div class="plane-card" style="background:var(--teal-l);border-color:var(--teal-m)">
+        <h4 style="color:var(--teal)">Zone 1 — API Gateway</h4>
+        <div class="plane-sub" style="color:var(--teal)">INBOUND · external → platform</div>
+        <ul style="color:var(--teal)">
+          <li>Authenticates all inbound traffic</li>
+          <li>AuthN, rate limiting, DDoS protection</li>
+          <li>Routes to services or agent gateway</li>
+          <li>Owns: user identity, session tokens</li>
+          <li>Direction: INTO the platform</li>
+        </ul>
+      </div>
+      <div class="plane-card" style="background:var(--amber-l);border-color:var(--amber-m)">
+        <h4 style="color:var(--amber)">Zone 2D — Tool Gateway</h4>
+        <div class="plane-sub" style="color:var(--amber)">OUTBOUND · agents → any system</div>
+        <ul style="color:var(--amber)">
+          <li>Governs all agent-to-system calls</li>
+          <li>Dynamic tool selection at runtime</li>
+          <li>Per-agent credential scoping</li>
+          <li>Owns: service credentials, tool manifests</li>
+          <li>Direction: OUT from the platform</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout" style="background:var(--coral-l);border-color:var(--coral)">
+      <div class="callout-label" style="color:var(--coral)">Critical security principle</div>
+      <p style="color:var(--coral)">The agent never holds credentials. The Tool Gateway owns all service accounts, API keys, and OAuth tokens — for both internal and external systems. Break-glass revocation at the gateway level instantly cuts off all agents from a target system in one action. The same Xero instance can be reached by multiple agents, each with different scoped credentials — AP agent cannot access payroll even though both are in Xero.</p>
+    </div>
+
+    <h3 style="margin:2rem 0 1rem;font-size:1rem">Credentials held by the Tool Gateway</h3>
+    <div class="zone-grid">
+      <div class="zone-card">
+        <div class="zone-num" style="background:var(--amber-l);color:var(--amber)">External SaaS</div>
+        <ul>
+          <li>Xero ERP — OAuth 2.0, scoped to Bills.Write, Accounts.Read only</li>
+          <li>Salesforce CRM — OAuth 2.0, vendor records read-only</li>
+          <li>Email / O365 — scoped to AP inbox read, send notifications</li>
+          <li>Group-IB threat intel — API key, read-only feed</li>
+        </ul>
+      </div>
+      <div class="zone-card">
+        <div class="zone-num" style="background:var(--blue-l);color:var(--blue)">Internal systems</div>
+        <ul>
+          <li>DocStore — service token, PO/DN/GRN read, AP workflow only</li>
+          <li>ERP internal DB — DB service account, read-only vendor master</li>
+          <li>HR system — service token, approver role lookup only</li>
+          <li>Identity provider — service token, group membership lookup</li>
+        </ul>
+      </div>
+      <div class="zone-card">
+        <div class="zone-num" style="background:var(--green-l);color:var(--green)">Infrastructure</div>
+        <ul>
+          <li>Zone 3 Vector Store — internal mTLS, read queries only</li>
+          <li>Zone 3 Knowledge Graph — internal mTLS, read traversal</li>
+          <li>Zone 5 Audit Log — internal mTLS, append-only write</li>
+          <li>Message queue — internal mTLS, scoped topics only</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: PATTERNS -->
+<section id="patterns">
+  <div class="container">
+    <div class="section-label" style="color:var(--green)">Section 6</div>
+    <div class="section-title">Integration Pattern Evolution</div>
+    <div class="section-sub">Organisations don't choose a pattern — they grow into each one. The trigger is always pain. Each pattern layers on top of the previous; you rarely rip out what came before.</div>
+
+    <div class="pattern-grid">
+      <div class="pattern-card" style="border-top:3px solid var(--teal)">
+        <div class="p-num" style="color:var(--teal)">P1</div>
+        <h4>Direct service-to-service calls</h4>
+        <div class="p-scale" style="background:var(--teal-l);color:var(--teal)">1–10 services · 2–5 integrations</div>
+        <p>Each service calls external systems directly. Credentials in environment variables per service. Correct and fast at startup scale.</p>
+        <div class="trigger">Trigger to move → credential sprawl, no central audit, rate limit conflicts</div>
+      </div>
+      <div class="pattern-card" style="border-top:3px solid var(--blue)">
+        <div class="p-num" style="color:var(--blue)">P2</div>
+        <h4>ESB / Integration middleware</h4>
+        <div class="p-scale" style="background:var(--blue-l);color:var(--blue)">10–100 services · 10–50 integrations</div>
+        <p>MuleSoft, Boomi, IBM MQ centralises all calls. Credentials centralised, protocol translation handled. Dominant in large enterprises and regulated industries.</p>
+        <div class="trigger">Trigger to move → ESB bottleneck, microservices teams need autonomy, licensing cost</div>
+      </div>
+      <div class="pattern-card" style="border-top:3px solid var(--purple)">
+        <div class="p-num" style="color:var(--purple)">P3</div>
+        <h4>API Gateway outbound proxy</h4>
+        <div class="p-scale" style="background:var(--purple-l);color:var(--purple)">100+ services · cloud-native</div>
+        <p>API Gateway (Kong, Apigee) handles outbound. Service mesh (Istio, Linkerd) for internal east-west traffic. Teams own integrations with central governance.</p>
+        <div class="trigger">Trigger to move → agents making autonomous runtime decisions that P3 can't govern</div>
+      </div>
+      <div class="pattern-card" style="border-top:3px solid var(--amber)">
+        <div class="p-num" style="color:var(--amber)">P4</div>
+        <h4>Tool Gateway (agentic)</h4>
+        <div class="p-scale" style="background:var(--amber-l);color:var(--amber)">N agents · dynamic at runtime</div>
+        <p>Dedicated outbound gateway for agent-driven calls. Dynamic tool selection, per-agent credential scoping, reasoning-step audit. Does not replace P1–P3 — sits on top.</p>
+        <div class="trigger">Design this in from day one if agents are on your 24-month roadmap</div>
+      </div>
+    </div>
+
+    <div class="callout" style="background:var(--blue-l);border-color:var(--blue);margin-top:2rem">
+      <div class="callout-label" style="color:var(--blue)">Greenfield best practice (2025–2026)</div>
+      <p style="color:var(--blue)">Build in this order: <strong>1.</strong> Secrets Manager · <strong>2.</strong> Identity Platform · <strong>3.</strong> API Gateway (inbound P3) · <strong>4.</strong> Tool Gateway (P4 — even if empty) · <strong>5.</strong> Service Mesh (when 5+ services) · <strong>6.</strong> Observability + Audit Log. Building P4 when agents arrive on a live P3 platform is expensive. Building it empty from day one costs almost nothing.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 7: HYBRID -->
+<section id="hybrid">
+  <div class="container">
+    <div class="section-label" style="color:var(--teal)">Section 7</div>
+    <div class="section-title">Hybrid Architecture — Two Planes, One Foundation</div>
+    <div class="section-sub">For a platform that requires both application-to-application integration and agentic workflows simultaneously: keep the planes separate, share the infrastructure underneath. The caller identity determines the plane — not the target system.</div>
+
+    <div class="two-plane">
+      <div class="plane-card" style="background:var(--blue-l);border-color:var(--blue-m)">
+        <h4 style="color:var(--blue)">(a) Service Integration Plane</h4>
+        <div class="plane-sub" style="color:var(--blue)">App-to-app · service mesh + API GW outbound</div>
+        <ul style="color:var(--blue-dark,#0C447C)">
+          <li>Caller: deterministic service with fixed identity</li>
+          <li>Call sequence: pre-wired at build time</li>
+          <li>Fails fast — retry logic is deterministic</li>
+          <li>Audit: did the call succeed?</li>
+          <li>Governed by: service mesh + API GW proxy</li>
+          <li>Traffic: AP-Service → GL-Service → Xero</li>
+        </ul>
+      </div>
+      <div class="plane-card" style="background:var(--purple-l);border-color:var(--purple-m)">
+        <h4 style="color:var(--purple)">(b) Agent Execution Plane</h4>
+        <div class="plane-sub" style="color:var(--purple)">Agentic workflows · Tool Gateway outbound</div>
+        <ul style="color:var(--purple-dark,#3C3489)">
+          <li>Caller: autonomous agent deciding at runtime</li>
+          <li>Call sequence: decided dynamically by ReAct loop</li>
+          <li>Failures need context — what was the agent doing?</li>
+          <li>Audit: why was this call made?</li>
+          <li>Governed by: Tool Gateway + Zone 4 Guardrails</li>
+          <li>Traffic: AP-Agent → Tool GW → Xero connector → Xero</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="arch-row" style="background:var(--gray-l);border-radius:10px;border:1px solid var(--border);padding:1.25rem 1.5rem;margin-top:1.25rem">
+      <div class="arch-label" style="color:var(--gray)">Shared Foundation — used by both planes</div>
+      <div class="arch-chips" style="margin-top:0.5rem">
+        <span class="chip" style="background:white"><strong>Secrets Manager</strong> — one credential store · auto-rotation</span>
+        <span class="chip" style="background:white"><strong>Identity Platform</strong> — human + agent principals · unified IAM</span>
+        <span class="chip" style="background:white"><strong>Observability + Audit</strong> — unified trace across both planes</span>
+      </div>
+    </div>
+
+    <div class="callout" style="background:var(--amber-l);border-color:var(--amber);margin-top:1.5rem">
+      <div class="callout-label" style="color:var(--amber)">The routing rule</div>
+      <p style="color:var(--amber)">Xero can be called by both AP-Service (service plane) and AP-Matching-Agent (agent plane). The service call goes through the API GW outbound proxy. The agent call goes through the Tool Gateway. Same destination — completely separate governance. Same credential from the same Secrets Manager — but delivered through the plane appropriate to the caller.</p>
+    </div>
+
+    <h3 style="margin:2rem 0 1rem;font-size:1rem">When an agent calls an internal service</h3>
+    <div class="two-col">
+      <div class="col-card" style="background:var(--teal-l);border-color:var(--teal-m)">
+        <h4 style="color:var(--teal)">Service mesh is sufficient when</h4>
+        <ul>
+          <li>Read-only, low-risk internal call</li>
+          <li>High frequency, low governance needed</li>
+          <li>Agent identity propagated via mesh headers</li>
+        </ul>
+      </div>
+      <div class="col-card" style="background:var(--amber-l);border-color:var(--amber-m)">
+        <h4 style="color:var(--amber)">Tool Gateway always when</h4>
+        <ul>
+          <li>Any write action</li>
+          <li>High-value or regulated call</li>
+          <li>Reasoning-level audit required</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 8: PRINCIPLES -->
+<section id="principles">
+  <div class="container">
+    <div class="section-label" style="color:var(--gray)">Section 8</div>
+    <div class="section-title">Key Governing Principles</div>
+    <div class="section-sub">The distilled principles from the full architecture discussion — the ideas that should guide every design and implementation decision.</div>
+
+    <div class="principles-grid">
+      <div class="principle-card" style="border-top:3px solid var(--amber)">
+        <div class="p-label" style="color:var(--amber)">Tool Gateway</div>
+        <p>The Tool Gateway is the only point where agent intent becomes a real-world side effect. Everything before it is reasoning. Everything after it is action. That single boundary is what makes the system auditable, securable, and safe to run autonomously.</p>
+      </div>
+      <div class="principle-card" style="border-top:3px solid var(--teal)">
+        <div class="p-label" style="color:var(--teal)">Zone 3 Updates</div>
+        <p>Zone 3 is read-only to agents at runtime. The frequency and formality of each update pathway matches the risk level of the data being changed — a threshold update needs a CFO counter-sign, a new invoice in the vector store is automated.</p>
+      </div>
+      <div class="principle-card" style="border-top:3px solid var(--purple)">
+        <div class="p-label" style="color:var(--purple)">Hybrid Architecture</div>
+        <p>Separate the planes, share the foundation. The caller identity determines which plane a call travels through — not the target system, not the data type, not the business domain.</p>
+      </div>
+      <div class="principle-card" style="border-top:3px solid var(--blue)">
+        <div class="p-label" style="color:var(--blue)">Greenfield Design</div>
+        <p>Pattern 3 is still the right answer for human-driven integration. But designing only for Pattern 3 is now a deliberate choice to incur technical debt — because agents are not a question of if, only when.</p>
+      </div>
+      <div class="principle-card" style="border-top:3px solid var(--green)">
+        <div class="p-label" style="color:var(--green)">Pattern Evolution</div>
+        <p>You do not choose a pattern — you grow into each one. The trigger is always pain. Each pattern layers on top of the previous — you rarely rip out what came before.</p>
+      </div>
+      <div class="principle-card" style="border-top:3px solid var(--coral)">
+        <div class="p-label" style="color:var(--coral)">Approval Gates</div>
+        <p>Zone 2B holds the structure (when to check). Zone 3 holds the values (what the thresholds are). Zone 4 holds the non-negotiables (what can never happen). Keeping these separate means each team can update their layer without touching the others.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>Warburg Pincus · Agentic AI Platform Architecture</strong><br>
+  Prepared by Claude (Anthropic) · April 2026 · For internal reference only
+</footer>
+
+</body>
+</html>
