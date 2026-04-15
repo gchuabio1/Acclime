@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acclime Group — Cybersecurity Posture Review · March 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:   #0f1b2d;
+    --navy2:  #162236;
+    --navy3:  #1e3050;
+    --red:    #c0392b;
+    --red2:   #e74c3c;
+    --orange: #d35400;
+    --amber:  #e67e22;
+    --yellow: #f39c12;
+    --green:  #1a7a4a;
+    --green2: #27ae60;
+    --teal:   #0e8c6a;
+    --blue:   #1e6fa8;
+    --blue2:  #2980b9;
+    --white:  #f0ede6;
+    --cream:  #e8e3d9;
+    --muted:  #8a9bb0;
+    --border: rgba(255,255,255,0.08);
+    --glow-r: rgba(192,57,43,0.15);
+    --glow-g: rgba(26,122,74,0.15);
+    --glow-b: rgba(41,128,185,0.15);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  /* ── NAVIGATION ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 60px;
+    background: rgba(15,27,45,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.15em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-brand span { color: var(--amber); }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--amber);
+    border: 1px solid var(--amber);
+    padding: 4px 10px;
+    text-transform: uppercase;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 80px 48px 64px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
+  }
+  .hero-glow {
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(192,57,43,0.12) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-glow2 {
+    position: absolute;
+    bottom: -100px; left: 100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(41,128,185,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 9vw, 130px);
+    line-height: 0.92;
+    letter-spacing: 0.02em;
+    color: var(--white);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.35s forwards;
+  }
+  .hero-title .accent { color: var(--amber); }
+  .hero-title .dim { color: var(--muted); }
+  .hero-sub {
+    max-width: 600px;
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.5;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.5s forwards;
+  }
+  .hero-kpis {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    width: fit-content;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.65s forwards;
+  }
+  .hero-kpi {
+    padding: 20px 36px;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+  .hero-kpi:last-child { border-right: none; }
+  .hero-kpi-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .hero-kpi-val.red { color: var(--red2); }
+  .hero-kpi-val.amber { color: var(--amber); }
+  .hero-kpi-val.green { color: var(--green2); }
+  .hero-kpi-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .scroll-hint {
+    position: absolute;
+    bottom: 24px;
+    right: 48px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: pulse 2s infinite;
+  }
+  .scroll-hint::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+  }
+
+  /* ── SECTION CHROME ── */
+  .section {
+    padding: 100px 48px;
+    position: relative;
+  }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(42px, 5vw, 72px);
+    letter-spacing: 0.03em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .section-rule {
+    width: 60px;
+    height: 2px;
+    margin: 20px 0 48px;
+  }
+
+  /* ── MATURITY SCORECARD ── */
+  .maturity-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-top: 48px;
+  }
+  .maturity-card {
+    background: var(--navy2);
+    padding: 32px 28px;
+    border-top: 3px solid transparent;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s;
+  }
+  .maturity-card:hover { transform: translateY(-4px); }
+  .maturity-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--border);
+  }
+  .maturity-card.l1 { border-color: var(--amber); }
+  .maturity-card.l2 { border-color: var(--yellow); }
+  .maturity-card.l3 { border-color: var(--orange); }
+  .maturity-card.l4 { border-color: var(--red); }
+  .maturity-level-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .maturity-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  .maturity-bar-wrap {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .maturity-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+  .maturity-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    margin: 16px 0 4px;
+  }
+  .maturity-sublabel {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+  }
+  .maturity-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 16px;
+  }
+  .maturity-pill {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+  .pill-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .maturity-controls {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── THE GOOD/BAD/UGLY SECTIONS ── */
+  .verdict-section { position: relative; }
+  .verdict-bg-good  { background: linear-gradient(135deg, var(--navy) 0%, rgba(26,122,74,0.06) 100%); }
+  .verdict-bg-bad   { background: linear-gradient(135deg, var(--navy) 0%, rgba(211,84,0,0.06) 100%); }
+  .verdict-bg-ugly  { background: linear-gradient(135deg, var(--navy2) 0%, rgba(192,57,43,0.1) 100%); }
+
+  .verdict-header {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  .verdict-icon {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 120px;
+    line-height: 0.85;
+    opacity: 0.08;
+    position: absolute;
+    top: 60px;
+    right: 48px;
+    pointer-events: none;
+    letter-spacing: -0.02em;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.15);
+  }
+  .card-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    margin-bottom: 16px;
+    display: inline-block;
+  }
+  .badge-good    { background: rgba(39,174,96,0.15); color: var(--green2); border: 1px solid rgba(39,174,96,0.3); }
+  .badge-warning { background: rgba(230,126,34,0.15); color: var(--amber); border: 1px solid rgba(230,126,34,0.3); }
+  .badge-danger  { background: rgba(192,57,43,0.15); color: var(--red2); border: 1px solid rgba(192,57,43,0.3); }
+  .badge-critical{ background: rgba(192,57,43,0.25); color: #ff6b6b; border: 1px solid rgba(192,57,43,0.5); }
+  .badge-info    { background: rgba(41,128,185,0.15); color: var(--blue2); border: 1px solid rgba(41,128,185,0.3); }
+
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+  .card-body {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #a8b8cc;
+  }
+  .card-body strong { color: var(--white); font-weight: 500; }
+  .card-accent-bar {
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+  }
+
+  /* ── THREAT TABLE ── */
+  .threat-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+  .threat-table th {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--navy3);
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .threat-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .threat-table tr:hover td { background: rgba(255,255,255,0.03); }
+  .domain-name { color: var(--white); font-weight: 500; }
+  .sev-chip {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+  .sev-critical { background: rgba(192,57,43,0.25); color: #ff6b6b; }
+  .sev-high     { background: rgba(230,126,34,0.2); color: var(--amber); }
+  .sev-medium   { background: rgba(243,156,18,0.2); color: var(--yellow); }
+  .sev-low      { background: rgba(39,174,96,0.2); color: var(--green2); }
+  .num-critical { color: #ff6b6b; font-size: 15px; font-weight: 500; }
+  .num-high     { color: var(--amber); font-size: 15px; }
+  .num-ok       { color: var(--muted); }
+
+  /* ── ACTION PLAN ── */
+  .action-lanes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    margin-top: 48px;
+  }
+  .action-lane {
+    padding: 0;
+    position: relative;
+  }
+  .lane-header {
+    padding: 20px 28px;
+    position: sticky;
+    top: 60px;
+    z-index: 10;
+  }
+  .lane-header.immediate { background: rgba(192,57,43,0.2); border-top: 3px solid var(--red2); }
+  .lane-header.shortterm { background: rgba(230,126,34,0.15); border-top: 3px solid var(--amber); }
+  .lane-header.longterm  { background: rgba(41,128,185,0.12); border-top: 3px solid var(--blue2); }
+  .lane-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .lane-subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .action-items { padding: 4px 0; }
+  .action-item {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    transition: background 0.2s;
+  }
+  .action-item:hover { background: rgba(255,255,255,0.03); }
+  .action-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    line-height: 1;
+    color: rgba(255,255,255,0.08);
+    float: right;
+    margin-left: 12px;
+    margin-top: -4px;
+  }
+  .action-title {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .action-body {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #8a9bb0;
+    line-height: 1.7;
+  }
+  .action-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 10px;
+  }
+  .action-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    padding: 2px 8px;
+    background: rgba(255,255,255,0.06);
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── BUDGET ── */
+  .budget-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 48px;
+  }
+  .budget-card {
+    background: var(--navy2);
+    padding: 32px 28px;
+    border-left: 3px solid;
+    transition: transform 0.3s;
+  }
+  .budget-card:hover { transform: translateX(4px); }
+  .budget-amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .budget-label {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .budget-desc {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .budget-status {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 16px;
+    padding: 4px 10px;
+    display: inline-block;
+  }
+  .status-approved  { background: rgba(39,174,96,0.15); color: var(--green2); }
+  .status-pending   { background: rgba(230,126,34,0.15); color: var(--amber); }
+  .status-tbd       { background: rgba(138,155,176,0.15); color: var(--muted); }
+  .budget-total {
+    grid-column: 1 / -1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .budget-total-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .budget-total-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--amber);
+    line-height: 1;
+  }
+
+  /* ── GOVERNANCE ── */
+  .gov-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 48px;
+  }
+  .gov-card {
+    background: var(--navy2);
+    padding: 28px;
+    border-top: 2px solid var(--border);
+  }
+  .gov-role {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    color: var(--amber);
+    margin-bottom: 16px;
+  }
+  .gov-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .gov-items li {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #a8b8cc;
+    line-height: 1.5;
+    padding-left: 16px;
+    position: relative;
+  }
+  .gov-items li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--amber);
+  }
+
+  /* ── CLOSING ── */
+  .closing {
+    background: var(--navy2);
+    border-top: 1px solid var(--border);
+    padding: 120px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .closing-glow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(192,57,43,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .closing-quote {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.3;
+    max-width: 800px;
+    margin: 0 auto 32px;
+    color: var(--cream);
+  }
+  .closing-quote strong { font-weight: 900; font-style: normal; color: var(--amber); }
+  .closing-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #080f1a;
+    padding: 24px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+  }
+  footer p {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 0 48px;
+  }
+
+  /* ── VIP ALERT ── */
+  .vip-alert {
+    background: rgba(192,57,43,0.08);
+    border: 1px solid rgba(192,57,43,0.3);
+    border-left: 4px solid var(--red2);
+    padding: 20px 28px;
+    margin-top: 32px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .vip-alert-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .vip-alert-title {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--red2);
+    margin-bottom: 6px;
+  }
+  .vip-alert-body {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #a8b8cc;
+    line-height: 1.7;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .maturity-grid, .cards-grid, .action-lanes,
+    .budget-grid, .gov-grid { grid-template-columns: 1fr 1fr; }
+    .hero-title { font-size: 60px; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .section { padding: 60px 20px; }
+    .hero { padding: 80px 20px 48px; }
+    .maturity-grid, .cards-grid, .action-lanes,
+    .budget-grid, .gov-grid { grid-template-columns: 1fr; }
+    .hero-kpis { flex-direction: column; }
+    .hero-kpi { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <a class="nav-brand" href="#"><span>ACCLIME</span> · CYBER REVIEW</a>
+  <ul class="nav-links">
+    <li><a href="#snapshot">Snapshot</a></li>
+    <li><a href="#good">The Good</a></li>
+    <li><a href="#bad">The Bad</a></li>
+    <li><a href="#ugly">The Ugly</a></li>
+    <li><a href="#actions">Actions</a></li>
+    <li><a href="#budget">Budget</a></li>
+  </ul>
+  <div class="nav-badge">Confidential · Mar 2026</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div class="hero-eyebrow">Warburg Pincus · Portfolio Review · March 2026</div>
+  <h1 class="hero-title">
+    ACCLIME<br>
+    <span class="accent">CYBER</span><br>
+    <span class="dim">POSTURE</span>
+  </h1>
+  <p class="hero-sub">
+    A comprehensive review of Acclime Group's cybersecurity maturity, external threat exposure, and active risk — with a clear-eyed assessment of what's working, what's broken, and what demands immediate action.
+  </p>
+  <div class="hero-kpis">
+    <div class="hero-kpi">
+      <div class="hero-kpi-val amber">45%</div>
+      <div class="hero-kpi-label">Controls Implemented</div>
+    </div>
+    <div class="hero-kpi">
+      <div class="hero-kpi-val red">HIGH</div>
+      <div class="hero-kpi-label">Threat Level</div>
+    </div>
+    <div class="hero-kpi">
+      <div class="hero-kpi-val red">13</div>
+      <div class="hero-kpi-label">Critical CVEs Open</div>
+    </div>
+    <div class="hero-kpi">
+      <div class="hero-kpi-val red">14</div>
+      <div class="hero-kpi-label">Accounts Breached '26</div>
+    </div>
+    <div class="hero-kpi">
+      <div class="hero-kpi-val green">18</div>
+      <div class="hero-kpi-label">Active Initiatives</div>
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</section>
+
+<!-- MATURITY SCORECARD -->
+<section class="section" id="snapshot">
+  <div class="section-label">01 · Executive Snapshot</div>
+  <h2 class="section-title">Maturity Scorecard</h2>
+  <div class="section-rule" style="background: var(--amber);"></div>
+  <p class="reveal" style="max-width:700px; font-size:18px; font-weight:300; color:var(--cream); line-height:1.6;">
+    Acclime is assessed against the Warburg Pincus cybersecurity framework — 93 controls across four maturity levels. Current posture sits <strong>between Level 1 and Level 2</strong>, with foundational controls solid but critical operational gaps remaining.
+  </p>
+
+  <div class="maturity-grid">
+    <!-- L1 -->
+    <div class="maturity-card l1 reveal reveal-delay-1">
+      <div class="maturity-level-tag">Level 1 · Initial</div>
+      <div class="maturity-name">Foundational Controls</div>
+      <div class="maturity-pct" style="color: var(--amber);">65%</div>
+      <div class="maturity-sublabel">Fully Implemented · 23 Controls</div>
+      <div class="maturity-bar-wrap"><div class="maturity-bar" style="width:65%; background: var(--amber);"></div></div>
+      <div class="maturity-pills">
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--green2)"></span>Fully Implemented</span><span style="color:var(--green2)">15</span></div>
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--yellow)"></span>Partial</span><span style="color:var(--yellow)">7</span></div>
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--red2)"></span>Not Implemented</span><span style="color:var(--red2)">1</span></div>
+      </div>
+      <div class="maturity-controls">MFA · EDR · Backup · Email Security · Endpoint Mgmt · Firewall</div>
+    </div>
+    <!-- L2 -->
+    <div class="maturity-card l2 reveal reveal-delay-2">
+      <div class="maturity-level-tag">Level 2 · Formalized</div>
+      <div class="maturity-name">Operational Controls</div>
+      <div class="maturity-pct" style="color: var(--yellow);">46%</div>
+      <div class="maturity-sublabel">Fully Implemented · 37 Controls</div>
+      <div class="maturity-bar-wrap"><div class="maturity-bar" style="width:46%; background: var(--yellow);"></div></div>
+      <div class="maturity-pills">
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--green2)"></span>Fully Implemented</span><span style="color:var(--green2)">17</span></div>
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--yellow)"></span>Partial</span><span style="color:var(--yellow)">12</span></div>
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--red2)"></span>Not Implemented</span><span style="color:var(--red2)">8</span></div>
+      </div>
+      <div class="maturity-controls">SSO · SIEM Logging · Cloud Scanning · Password Policy · Role-Based Access</div>
+    </div>
+    <!-- L3 -->
+    <div class="maturity-card l3 reveal reveal-delay-3">
+      <div class="maturity-level-tag">Level 3 · Managed</div>
+      <div class="maturity-name">Advanced Controls</div>
+      <div class="maturity-pct" style="color: var(--orange);">32%</div>
+      <div class="maturity-sublabel">Fully Implemented · 19 Controls</div>
+      <div class="maturity-bar-wrap"><div class="maturity-bar" style="width:32%; background: var(--orange);"></div></div>
+      <div class="maturity-pills">
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--green2)"></span>Fully Implemented</span><span style="color:var(--green2)">6</span></div>
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--yellow)"></span>Partial</span><span style="color:var(--yellow)">7</span></div>
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--red2)"></span>Not Implemented</span><span style="color:var(--red2)">6</span></div>
+      </div>
+      <div class="maturity-controls">PAM · WAF · DDoS · Server Encryption · Cloud Posture · Geo-blocking</div>
+    </div>
+    <!-- L4 -->
+    <div class="maturity-card l4 reveal reveal-delay-4">
+      <div class="maturity-level-tag">Level 4 · Optimised</div>
+      <div class="maturity-name">Mature Controls</div>
+      <div class="maturity-pct" style="color: var(--red2);">29%</div>
+      <div class="maturity-sublabel">Fully Implemented · 14 Controls</div>
+      <div class="maturity-bar-wrap"><div class="maturity-bar" style="width:29%; background: var(--red2);"></div></div>
+      <div class="maturity-pills">
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--green2)"></span>Fully Implemented</span><span style="color:var(--green2)">4</span></div>
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--yellow)"></span>Partial</span><span style="color:var(--yellow)">2</span></div>
+        <div class="maturity-pill"><span><span class="pill-dot" style="background:var(--red2)"></span>Not Implemented</span><span style="color:var(--red2)">8</span></div>
+      </div>
+      <div class="maturity-controls">IaC · Secret Mgmt · ISO 27001 · Dedicated CISO · AIDR · Alert Tuning</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- THE GOOD -->
+<section class="section verdict-section verdict-bg-good" id="good">
+  <div class="verdict-icon" style="color:var(--green2)">GOOD</div>
+  <div class="section-label">02 · Strengths</div>
+  <h2 class="section-title" style="color:var(--green2);">The Good</h2>
+  <div class="section-rule" style="background: var(--green2);"></div>
+  <p class="reveal" style="max-width:680px; font-size:17px; font-weight:300; color:var(--cream); line-height:1.6;">
+    Acclime has invested meaningfully in foundational security. These controls are genuinely effective and represent real risk reduction — particularly against credential attacks and endpoint compromise.
+  </p>
+
+  <div class="cards-grid" style="margin-top:40px;">
+    <div class="card reveal reveal-delay-1">
+      <div class="card-accent-bar" style="background:var(--green2)"></div>
+      <div class="card-badge badge-good">Implemented · Critical</div>
+      <div class="card-title">MFA Enforced Group-Wide</div>
+      <div class="card-body">MFA required across <strong>VPN, admin accounts, email (O365), backup console</strong> and all cloud access. Legacy protocols blocked. Remote VPN restricted by IP in HK, China, Australia & Crowe. <strong>Strong protection against credential stuffing attacks.</strong></div>
+    </div>
+    <div class="card reveal reveal-delay-2">
+      <div class="card-accent-bar" style="background:var(--green2)"></div>
+      <div class="card-badge badge-good">Implemented · Critical</div>
+      <div class="card-title">EDR + MDM Deployed</div>
+      <div class="card-body"><strong>LMNTRIX + Microsoft Defender</strong> across all endpoints. Scripting blocked for standard users. Local admin rights removed. BitLocker encryption via Intune. Microsoft E3/E5 MDM for mobile devices. Solid endpoint posture.</div>
+    </div>
+    <div class="card reveal reveal-delay-3">
+      <div class="card-accent-bar" style="background:var(--green2)"></div>
+      <div class="card-badge badge-good">Implemented · Critical</div>
+      <div class="card-title">Multi-Layer Email Security</div>
+      <div class="card-body"><strong>Microsoft Defender ATP + Perception Point</strong> running in tandem. KnowBe4 phishing simulation launching <strong>1 April 2026</strong> across Mauritius, Seychelles & UAE. Phishing is the #1 attack vector — this is the right investment.</div>
+    </div>
+    <div class="card reveal reveal-delay-1">
+      <div class="card-accent-bar" style="background:var(--teal)"></div>
+      <div class="card-badge badge-good">Implemented · High</div>
+      <div class="card-title">Immutable Backup & SIEM Logging</div>
+      <div class="card-body">Immutable backups stored in <strong>Acronis</strong>. LMNTRIX Grid SIEM retains logs <strong>3 months online + 9 months offline</strong>. Sources: Sonicwall, AWS, Entra ID, Defender. Forensic capacity exists if an incident occurs.</div>
+    </div>
+    <div class="card reveal reveal-delay-2">
+      <div class="card-accent-bar" style="background:var(--teal)"></div>
+      <div class="card-badge badge-good">Implemented · High</div>
+      <div class="card-title">Cloud Security Posture Active</div>
+      <div class="card-body"><strong>AWS Security Hub, AWS Inspector, Defender for Cloud</strong> all enabled. Geo-blocking active on M365 and Sonicwall firewall. Containers run on least privilege. AWS CloudWatch deployed. Azure Monitor in progress.</div>
+    </div>
+    <div class="card reveal reveal-delay-3">
+      <div class="card-accent-bar" style="background:var(--teal)"></div>
+      <div class="card-badge badge-good">Implemented · High</div>
+      <div class="card-title">Annual Third-Party Pen Testing</div>
+      <div class="card-body">External penetration tests conducted <strong>annually + post-change</strong>. Criticals remediated within 30 days, highs within 60. TPRM via UpGuard entering final review. IPS enabled on Sonicwall. <strong>Proactive security posture validated externally.</strong></div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- THE BAD -->
+<section class="section verdict-section verdict-bg-bad" id="bad">
+  <div class="verdict-icon" style="color:var(--amber)">BAD</div>
+  <div class="section-label">03 · Material Gaps</div>
+  <h2 class="section-title" style="color:var(--amber);">The Bad</h2>
+  <div class="section-rule" style="background: var(--amber);"></div>
+  <p class="reveal" style="max-width:680px; font-size:17px; font-weight:300; color:var(--cream); line-height:1.6;">
+    These are known, documented gaps from the maturity self-assessment. Each represents a class of attack that Acclime currently has <em>no mitigation for</em>. Budget has been allocated to most — the risk is in delay.
+  </p>
+
+  <div class="cards-grid" style="margin-top:40px;">
+    <div class="card reveal reveal-delay-1">
+      <div class="card-accent-bar" style="background:var(--red2)"></div>
+      <div class="card-badge badge-critical">Not Implemented · Critical</div>
+      <div class="card-title">No SASE / ZTNA / DLP</div>
+      <div class="card-body">No Zero Trust Network Access. No Data Loss Prevention. Roaming users access the web without a secure gateway. <strong>S$405K budgeted</strong>; feasibility completed by Andi. <strong>Decision must happen now.</strong> Every week of delay is a week of uncontrolled data egress.</div>
+    </div>
+    <div class="card reveal reveal-delay-2">
+      <div class="card-accent-bar" style="background:var(--red2)"></div>
+      <div class="card-badge badge-critical">Not Implemented · Critical</div>
+      <div class="card-title">No PAM Solution</div>
+      <div class="card-body">Privileged Access Management not implemented. PIM used as interim only. <strong>Admin passwords are not auto-rotated.</strong> Local admin accounts unmanaged. Service accounts share credentials. Risk: insider threat and attacker lateral movement post-compromise.</div>
+    </div>
+    <div class="card reveal reveal-delay-3">
+      <div class="card-accent-bar" style="background:var(--red2)"></div>
+      <div class="card-badge badge-critical">Not Implemented · Critical</div>
+      <div class="card-title">No WAF on Applications</div>
+      <div class="card-body">Web Application Firewall absent from <strong>Agility, Acuity and Aura</strong>. Group-IB explicitly models Acclime as HIGH risk without WAF. External attack surface is significantly elevated. Feasibility study in progress — <strong>accelerate immediately.</strong></div>
+    </div>
+    <div class="card reveal reveal-delay-1">
+      <div class="card-accent-bar" style="background:var(--orange)"></div>
+      <div class="card-badge badge-danger">Not Implemented · Critical</div>
+      <div class="card-title">Admin Accounts Not Segmented</div>
+      <div class="card-body">Admin and everyday user accounts share the same identity. <strong>No separation between day-to-day and privileged access.</strong> Core Level 2 control. Dramatically increases blast radius of any account compromise — one phish grants admin access.</div>
+    </div>
+    <div class="card reveal reveal-delay-2">
+      <div class="card-accent-bar" style="background:var(--orange)"></div>
+      <div class="card-badge badge-warning">Not Implemented · Medium</div>
+      <div class="card-title">On-Premise Servers Unencrypted</div>
+      <div class="card-body">Windows on-premise servers lack <strong>server-storage encryption</strong>. BitLocker deployed on endpoints only — servers excluded. Physical access or server-level compromise exposes data in plaintext. Particularly relevant for offices with local infrastructure.</div>
+    </div>
+    <div class="card reveal reveal-delay-3">
+      <div class="card-accent-bar" style="background:var(--orange)"></div>
+      <div class="card-badge badge-warning">Partial · High</div>
+      <div class="card-title">MS Secure Score: 59% (Target 80%+)</div>
+      <div class="card-body">Microsoft's own security assessment rates Acclime at <strong>59/100</strong>. Target is 80%+. Known gaps: legacy auth protocols, conditional access coverage, configuration hygiene. Progress has been made but score hasn't moved. Quarterly improvement programme needed.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- THE UGLY -->
+<section class="section verdict-section verdict-bg-ugly" id="ugly">
+  <div class="verdict-icon" style="color:var(--red)">UGLY</div>
+  <div class="section-label">04 · Active Threats</div>
+  <h2 class="section-title" style="color:var(--red2);">The Ugly</h2>
+  <div class="section-rule" style="background: var(--red2);"></div>
+  <p class="reveal" style="max-width:680px; font-size:17px; font-weight:300; color:var(--cream); line-height:1.6;">
+    Group-IB scanned all Acclime-related domains between 2–25 March 2026. The external attack surface is actively exposed. Several findings require <em>same-day action.</em>
+  </p>
+
+  <!-- VIP ALERTS -->
+  <div class="vip-alert reveal">
+    <div class="vip-alert-icon">🔴</div>
+    <div>
+      <div class="vip-alert-title">VIP Exposure · Martin Crawford (CEO) — 9 Breach Records</div>
+      <div class="vip-alert-body">m.crawford@acclime.com found in 9 breach databases. <strong>PII exposed: full name, date of birth, phone number.</strong> Sources include Vietnam Airlines (Oct 2025) and mywallet.co (Mar 2023). Credential stuffing or spear-phishing targeting Crawford is a realistic near-term risk. Force password reset and brief individually.</div>
+    </div>
+  </div>
+  <div class="vip-alert reveal" style="margin-top:8px;">
+    <div class="vip-alert-icon">🟡</div>
+    <div>
+      <div class="vip-alert-title">VIP Exposure · Debby Davidson — 3 Breach Records</div>
+      <div class="vip-alert-body">d.davidson@acclime.com found in 3 breaches. <strong>PII exposed: full name, phone number.</strong> Sources: lazy.com.hk (Jun 2025), lookiero.com (Aug 2024). Password reset and MFA verification required immediately.</div>
+    </div>
+  </div>
+
+  <!-- Domain Threat Table -->
+  <table class="threat-table reveal">
+    <thead>
+      <tr>
+        <th>Domain</th>
+        <th>Overall Risk</th>
+        <th>Critical CVEs</th>
+        <th>High Issues</th>
+        <th>Key Finding</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="domain-name">acclime.com</span></td>
+        <td><span class="sev-chip sev-high">High</span></td>
+        <td><span class="num-critical">10</span></td>
+        <td><span class="num-high">142</span></td>
+        <td class="card-body">CVE-2020-11023 (jQuery XSS) · TLS 1.0 on RDP port 3389 · 140 assets missing HTTP headers · 6 breached email accounts in 2026</td>
+      </tr>
+      <tr>
+        <td><span class="domain-name">vspv.in</span></td>
+        <td><span class="sev-chip sev-critical">Critical</span></td>
+        <td><span class="num-critical">87</span></td>
+        <td><span class="num-high">8</span></td>
+        <td class="card-body">87 critical CVEs · CVE-2025-49630 Apache (CVSS 7.5) · Invalid SSL cert on PII-capture forms · Open SSH port 22 · Data privacy breach risk</td>
+      </tr>
+      <tr>
+        <td><span class="domain-name">nanubhaidesai.com</span></td>
+        <td><span class="sev-chip sev-critical">Critical</span></td>
+        <td><span class="num-critical">1+</span></td>
+        <td><span class="num-high">8</span></td>
+        <td class="card-body" style="color:var(--red2);"><strong>ACTIVE PHISHING DOMAIN</strong> — nanubhaidesai.ph redirects to known phishing infrastructure · WordPress user list publicly exposed · Open SSH + MySQL ports</td>
+      </tr>
+      <tr>
+        <td><span class="domain-name">bmchatrath.com</span></td>
+        <td><span class="sev-chip sev-high">High</span></td>
+        <td><span class="num-critical">6</span></td>
+        <td><span class="num-high">22</span></td>
+        <td class="card-body" style="color:var(--amber);"><strong>Domain EXPIRED Nov 2025 — site still active.</strong> Expired domain at risk of hijacking. 6 unpatched critical CVEs. Immediate action required.</td>
+      </tr>
+      <tr>
+        <td><span class="domain-name">fiducia-china.com</span></td>
+        <td><span class="sev-chip sev-high">High</span></td>
+        <td><span class="num-critical">4</span></td>
+        <td><span class="num-high">9</span></td>
+        <td class="card-body">4 critical CVEs · 6 SSL certificates expiring imminently · Open management ports 22 & 3306 · 14 accounts in 2026 breaches with PII</td>
+      </tr>
+      <tr>
+        <td><span class="domain-name">principium-consulting.com</span></td>
+        <td><span class="sev-chip sev-high">High</span></td>
+        <td><span class="num-critical">6</span></td>
+        <td><span class="num-high">6</span></td>
+        <td class="card-body">6 critical CVEs · 7 invalid SSL certificates · 2 expired domains · Open ports 12 & 3306</td>
+      </tr>
+      <tr>
+        <td><span class="domain-name">Older Domains (Lehman, RSMHK, Patmos)</span></td>
+        <td><span class="sev-chip sev-high">High</span></td>
+        <td><span class="num-critical">12</span></td>
+        <td><span class="num-high">25</span></td>
+        <td class="card-body">12 critical CVEs combined · 5 high-severity email security gaps · 1 medium credential leak · Certificate expiry issues</td>
+      </tr>
+      <tr>
+        <td><span class="domain-name">Other Active Domains (4 firms)</span></td>
+        <td><span class="sev-chip sev-medium">Medium</span></td>
+        <td><span class="num-critical">7</span></td>
+        <td><span class="num-high">15</span></td>
+        <td class="card-body">Boutique Capital, Crowe SG, BMC SaaS, Bourke Group — CVEs and insecure network headers across all four</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Breached accounts summary -->
+  <div style="margin-top:48px;">
+    <div class="section-label">Breached Database Summary</div>
+    <div class="cards-grid" style="margin-top:20px;">
+      <div class="card reveal reveal-delay-1">
+        <div class="card-badge badge-critical">All Domains · Historical</div>
+        <div class="card-title">4,481 Accounts Exposed (All Time)</div>
+        <div class="card-body">Across all active domains in Group-IB's 57B+ account breach database. <strong>14 accounts found in new 2026 breaches.</strong> Largest exposure: fiducia-china.com (2,468 accounts). Many historical records contain PII including home addresses and phone numbers.</div>
+      </div>
+      <div class="card reveal reveal-delay-2">
+        <div class="card-badge badge-danger">acclime.com · Active</div>
+        <div class="card-title">62 Acclime Accounts — 6 New in 2026</div>
+        <div class="card-body">62 total historical compromised accounts. <strong>6 new accounts found in 2026 breaches.</strong> Several Acclime accounts had plain-text O365 passwords exposed in OSINT data. Immediate audit and password resets across all 62 accounts required.</div>
+      </div>
+      <div class="card reveal reveal-delay-3">
+        <div class="card-badge badge-info">Dark Web · Positive Signal</div>
+        <div class="card-title">No Active Dark Web Sale Detected</div>
+        <div class="card-body">No evidence of Acclime data being actively sold or traded on underground forums. No malware C2 configurations linked to Acclime domains. Old Pastebin leaks from 2022 or earlier — not significant. <strong>The window to remediate proactively is still open.</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ACTION PLAN -->
+<section class="section" id="actions">
+  <div class="section-label">05 · Remediation</div>
+  <h2 class="section-title">Action Plan</h2>
+  <div class="section-rule" style="background: var(--blue2);"></div>
+  <p class="reveal" style="max-width:680px; font-size:17px; font-weight:300; color:var(--cream); line-height:1.6;">
+    Prioritised across three time horizons. Immediate actions address active, exploitable exposures — many are zero-cost and can be resolved in hours. Short and long-term actions close structural gaps.
+  </p>
+
+  <div class="action-lanes">
+    <!-- IMMEDIATE -->
+    <div class="action-lane">
+      <div class="lane-header immediate">
+        <div class="lane-title">Immediate</div>
+        <div class="lane-subtitle">0 – 30 Days · Act Now</div>
+      </div>
+      <div class="action-items">
+        <div class="action-item reveal">
+          <div class="action-num">1</div>
+          <div class="card-badge badge-critical" style="margin-bottom:10px;">Critical · IT / Dev</div>
+          <div class="action-title">Patch CVE-2020-11023 (jQuery XSS)</div>
+          <div class="action-body">Upgrade jQuery from 1.11.1 to ≥3.5.0 on cadenavn.acclime.com. 5 active exploits on GitHub. Fix in hours — zero procurement required.</div>
+          <div class="action-tags"><span class="action-tag">acclime.com</span><span class="action-tag">Low Effort</span><span class="action-tag">No Cost</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">2</div>
+          <div class="card-badge badge-critical" style="margin-bottom:10px;">Critical · IT / Infra</div>
+          <div class="action-title">Disable TLS 1.0 on Port 3389 (RDP)</div>
+          <div class="action-body">TLS 1.0 on RDP enables Man-in-the-Middle interception of remote desktop sessions. Enforce TLS 1.2+ only on 47.242.181.179. Under 1 hour fix.</div>
+          <div class="action-tags"><span class="action-tag">acclime.com</span><span class="action-tag">Low Effort</span><span class="action-tag">No Cost</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">3</div>
+          <div class="card-badge badge-critical" style="margin-bottom:10px;">Critical · CISO / IT</div>
+          <div class="action-title">Force Reset — All 14 Breached Accounts</div>
+          <div class="action-body">14 accounts confirmed in 2026 breaches. Treat as compromised. Force password change + verify MFA active. Brief VIPs (Crawford, Davidson) personally and immediately.</div>
+          <div class="action-tags"><span class="action-tag">All Domains</span><span class="action-tag">Low Effort</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">4</div>
+          <div class="card-badge badge-critical" style="margin-bottom:10px;">Critical · IT / Legal</div>
+          <div class="action-title">Take Down nanubhaidesai.ph Phishing Domain</div>
+          <div class="action-body">Active typosquat confirmed linking to known phishing infrastructure. File takedown with registrar today. Alert all staff to this live social engineering risk.</div>
+          <div class="action-tags"><span class="action-tag">nanubhaidesai.com</span><span class="action-tag">Low Effort</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">5</div>
+          <div class="card-badge badge-danger" style="margin-bottom:10px;">High · IT / Infra</div>
+          <div class="action-title">Replace Invalid SSL Certs — vspv.in & nanubhaidesai.com</div>
+          <div class="action-body">PII-capturing pages have invalid certificates. Data privacy breach risk under Indian data protection law. Replace immediately + implement auto-renewal.</div>
+          <div class="action-tags"><span class="action-tag">vspv.in</span><span class="action-tag">nanubhaidesai.com</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">6</div>
+          <div class="card-badge badge-danger" style="margin-bottom:10px;">High · IT / Legal</div>
+          <div class="action-title">Renew or Shut Down bmchatrath.com</div>
+          <div class="action-body">Domain expired November 2025. Site still active. Expired domains can be hijacked by anyone. Renew registration within 48 hours or formally decommission and redirect.</div>
+          <div class="action-tags"><span class="action-tag">bmchatrath.com</span><span class="action-tag">Low Cost</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHORT TERM -->
+    <div class="action-lane">
+      <div class="lane-header shortterm">
+        <div class="lane-title">Short-Term</div>
+        <div class="lane-subtitle">30 – 90 Days · Execute</div>
+      </div>
+      <div class="action-items">
+        <div class="action-item reveal">
+          <div class="action-num">7</div>
+          <div class="card-badge badge-critical" style="margin-bottom:10px;">Critical · CISO / IT</div>
+          <div class="action-title">Procure SASE / ZTNA / DLP — Decision Now</div>
+          <div class="action-body">Feasibility done. S$405K budgeted. This closes the biggest single gap in the entire maturity framework. Also resolves IAM and DLP requirements. Target deployment: end May 2026.</div>
+          <div class="action-tags"><span class="action-tag">S$405K Budgeted</span><span class="action-tag">Board Decision</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">8</div>
+          <div class="card-badge badge-danger" style="margin-bottom:10px;">High · IT / Infra</div>
+          <div class="action-title">Patch Apache on vspv.in (87 Critical CVEs)</div>
+          <div class="action-body">87 critical CVEs including Apache 2.4.43 (CVE-2025-49630, CVSS 7.5). Full CVE remediation plan needed. Particularly urgent given PII exposure + invalid cert combination.</div>
+          <div class="action-tags"><span class="action-tag">vspv.in</span><span class="action-tag">Medium Effort</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">9</div>
+          <div class="card-badge badge-danger" style="margin-bottom:10px;">High · IT / Infra</div>
+          <div class="action-title">Close Exposed Management Ports</div>
+          <div class="action-body">SSH (22), RDP (3389), MySQL (3306) exposed publicly across multiple domains. Restrict all to VPN/IP whitelist. This eliminates hundreds of "High" severity findings in one sweep. No cost — IT hardening task.</div>
+          <div class="action-tags"><span class="action-tag">Multiple Domains</span><span class="action-tag">No Cost</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">10</div>
+          <div class="card-badge badge-danger" style="margin-bottom:10px;">High · IT / Dev</div>
+          <div class="action-title">Implement HTTP Security Headers Globally</div>
+          <div class="action-body">140 assets on acclime.com missing CSP, HSTS, X-Frame-Options, X-Content-Type-Options. Simple web server config change. Eliminates 140 "High" findings. No external spend required.</div>
+          <div class="action-tags"><span class="action-tag">acclime.com</span><span class="action-tag">140 findings closed</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">11</div>
+          <div class="card-badge badge-warning" style="margin-bottom:10px;">High · Finance / CISO</div>
+          <div class="action-title">Approve Cyber Insurance Upgrade</div>
+          <div class="action-body">Current S$2M coverage is insufficient for a breach of this scale. Case sent to finance. Upgrade to S$5M. Insurer pre-conditions are minor remediative actions — many already listed here. S$90K annual premium.</div>
+          <div class="action-tags"><span class="action-tag">S$90K/year</span><span class="action-tag">Finance Approval</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">12</div>
+          <div class="card-badge badge-warning" style="margin-bottom:10px;">High · Procurement</div>
+          <div class="action-title">Mandate Cyber Insurance From IT Suppliers</div>
+          <div class="action-body">Add cyber insurance requirement to all IT supplier questionnaires. Policy change only — zero cost. Signals mature governance posture. Should be done in parallel with the TPRM (UpGuard) rollout.</div>
+          <div class="action-tags"><span class="action-tag">Policy Change</span><span class="action-tag">No Cost</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LONG TERM -->
+    <div class="action-lane">
+      <div class="lane-header longterm">
+        <div class="lane-title">Long-Term</div>
+        <div class="lane-subtitle">90 Days – 12 Months</div>
+      </div>
+      <div class="action-items">
+        <div class="action-item reveal">
+          <div class="action-num">13</div>
+          <div class="card-badge badge-critical" style="margin-bottom:10px;">Critical · CISO / IT</div>
+          <div class="action-title">Deploy PAM Solution</div>
+          <div class="action-body">Biggest single maturity lever after SASE. Automates admin password rotation, secures service accounts, eliminates shared credentials. Closes critical gaps in L2, L3 and L4 simultaneously. Target Q3 2026.</div>
+          <div class="action-tags"><span class="action-tag">Budget TBD</span><span class="action-tag">Q3 2026</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">14</div>
+          <div class="card-badge badge-critical" style="margin-bottom:10px;">Critical · IT / Dev</div>
+          <div class="action-title">Deploy WAF on All Applications</div>
+          <div class="action-body">Agility, Acuity and Aura all lack WAF protection. Group-IB explicitly scores Acclime as HIGH risk without this control. Feasibility underway — accelerate decision. External attack surface is meaningfully reduced with WAF deployed.</div>
+          <div class="action-tags"><span class="action-tag">Budget TBD</span><span class="action-tag">Feasibility Active</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">15</div>
+          <div class="card-badge badge-warning" style="margin-bottom:10px;">High · All · S$135K</div>
+          <div class="action-title">ISO 27001 / 27701 / 42001 Certification</div>
+          <div class="action-body">Gap analysis call held with Cyberensic. Certification provides regulatory readiness, client trust signal, and a structured continuous improvement framework. Supports Acclime's professional services positioning with enterprise clients.</div>
+          <div class="action-tags"><span class="action-tag">S$135K Budgeted</span><span class="action-tag">2027 Target</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">16</div>
+          <div class="card-badge badge-danger" style="margin-bottom:10px;">High · Board / CEO</div>
+          <div class="action-title">Appoint Dedicated CISO</div>
+          <div class="action-body">CISO responsibilities currently combined with CTO role — a critical governance gap. Appoint dedicated CISO or engage vCISO for interim coverage. Board accountability for cybersecurity must be clearly separated from technology ownership.</div>
+          <div class="action-tags"><span class="action-tag">Governance</span><span class="action-tag">H2 2026</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">17</div>
+          <div class="card-badge badge-warning" style="margin-bottom:10px;">High · Finance / CISO</div>
+          <div class="action-title">AP Wire Fraud Training — Group Finance</div>
+          <div class="action-body">Finance employees require training on wire fraud and impersonation attacks (BEC). Develop formal wire transfer procedure with Group Finance. Awareness sessions across all jurisdictions. Accounts payable is a high-value target.</div>
+          <div class="action-tags"><span class="action-tag">Finance</span><span class="action-tag">All Jurisdictions</span></div>
+        </div>
+        <div class="action-item reveal">
+          <div class="action-num">18</div>
+          <div class="card-badge badge-info" style="margin-bottom:10px;">Medium · IT / Cloud</div>
+          <div class="action-title">Server Encryption + DR/BCP + VAPT</div>
+          <div class="action-body">Enable BitLocker on on-premise Windows servers · Define DR/BCP with RTO/RPO for Agility/Acuity/Aura · Authenticated whitebox VAPT for both apps (S$25K budgeted) · Post-VAPT remediation programme. Full 2026–2027 scope.</div>
+          <div class="action-tags"><span class="action-tag">S$25K+ Budgeted</span><span class="action-tag">2026–2027</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- BUDGET -->
+<section class="section" id="budget">
+  <div class="section-label">06 · Investment & Governance</div>
+  <h2 class="section-title">Budget & Owners</h2>
+  <div class="section-rule" style="background: var(--blue2);"></div>
+
+  <div class="budget-grid">
+    <div class="budget-card reveal reveal-delay-1" style="border-color:var(--red2)">
+      <div class="budget-amount" style="color:var(--red2)">S$405K</div>
+      <div class="budget-label">SASE / ZTNA / DLP</div>
+      <div class="budget-desc">Zero Trust Network Access + Data Loss Prevention. Can be merged with IAM initiative. Feasibility complete. Largest single investment — largest single risk mitigation.</div>
+      <div class="budget-status status-pending">Decision Pending</div>
+    </div>
+    <div class="budget-card reveal reveal-delay-2" style="border-color:var(--amber)">
+      <div class="budget-amount" style="color:var(--amber)">S$135K</div>
+      <div class="budget-label">ISO 27001 / 27701 / 42001</div>
+      <div class="budget-desc">Tri-standard certification covering information security, privacy, and AI governance. Exploratory call held with Cyberensic. Gap analysis next step.</div>
+      <div class="budget-status status-pending">Initial Review</div>
+    </div>
+    <div class="budget-card reveal reveal-delay-3" style="border-color:var(--yellow)">
+      <div class="budget-amount" style="color:var(--yellow)">S$90K</div>
+      <div class="budget-label">Cyber Insurance Upgrade</div>
+      <div class="budget-desc">Upgrade from S$2M to S$5M coverage. Annual premium. Case submitted to finance. Insurer pre-conditions are minor technical items already on the remediation list.</div>
+      <div class="budget-status status-pending">Finance Approval</div>
+    </div>
+    <div class="budget-card reveal reveal-delay-1" style="border-color:var(--blue2)">
+      <div class="budget-amount" style="color:var(--blue2)">S$50K</div>
+      <div class="budget-label">AI Defence & Response (AIDR)</div>
+      <div class="budget-desc">Tool selection TBD — HiddenLayer under consideration. AI-specific threat detection and model protection. In early stages of evaluation.</div>
+      <div class="budget-status status-tbd">Initial Review</div>
+    </div>
+    <div class="budget-card reveal reveal-delay-2" style="border-color:var(--green2)">
+      <div class="budget-amount" style="color:var(--green2)">S$27K</div>
+      <div class="budget-label">Phishing Simulation (KnowBe4)</div>
+      <div class="budget-desc">Partial run launching 1 April 2026 (70 users — Mauritius, Seychelles, UAE). Full rollout mid-April. Target: &lt;12% click rate. Quarterly cadence from 2027.</div>
+      <div class="budget-status status-approved">Approved · Active</div>
+    </div>
+    <div class="budget-card reveal reveal-delay-3" style="border-color:var(--teal)">
+      <div class="budget-amount" style="color:var(--teal)">S$25K</div>
+      <div class="budget-label">Authenticated VAPT (Agility & Acuity)</div>
+      <div class="budget-desc">Whitebox vulnerability assessment + penetration test for both core applications. Code scans shelved pending refactoring completion. Scope to expand to other apps over time.</div>
+      <div class="budget-status status-pending">In Plans</div>
+    </div>
+    <div class="budget-total reveal">
+      <div>
+        <div class="budget-total-label">Estimated Total Committed Spend (FY 2026)</div>
+        <div style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-top:6px;">Excludes PAM, WAF, AIDR, DR/BCP items pending scoping · Subject to board approval · Amounts in SGD</div>
+      </div>
+      <div class="budget-total-val">~S$1.2M+</div>
+    </div>
+  </div>
+
+  <!-- Governance -->
+  <div style="margin-top:64px;">
+    <div class="section-label">Accountability Framework</div>
+    <h3 style="font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:0.05em; margin: 8px 0 32px;">Who Owns What</h3>
+    <div class="gov-grid">
+      <div class="gov-card reveal reveal-delay-1">
+        <div class="gov-role">Board</div>
+        <ul class="gov-items">
+          <li>Approve cybersecurity budget (S$1.2M+)</li>
+          <li>Receive quarterly security briefing</li>
+          <li>Mandate dedicated CISO appointment</li>
+          <li>Require cyber insurance from IT suppliers</li>
+        </ul>
+      </div>
+      <div class="gov-card reveal reveal-delay-2">
+        <div class="gov-role">CEO / Executive</div>
+        <ul class="gov-items">
+          <li>Champion SASE/ZTNA procurement decision</li>
+          <li>Appoint / resource dedicated CISO by H2 2026</li>
+          <li>Approve cyber insurance upgrade (S$90K)</li>
+          <li>Ensure Finance receives wire fraud training</li>
+        </ul>
+      </div>
+      <div class="gov-card reveal reveal-delay-3">
+        <div class="gov-role">CISO / Cyber Team</div>
+        <ul class="gov-items">
+          <li>Own all 18 active initiatives</li>
+          <li>Drive phishing simulation programme</li>
+          <li>Manage Group-IB remediation workplan</li>
+          <li>Deliver quarterly board reporting</li>
+          <li>Coordinate ISO 27001 gap analysis</li>
+        </ul>
+      </div>
+      <div class="gov-card reveal reveal-delay-1">
+        <div class="gov-role">IT / Infrastructure</div>
+        <ul class="gov-items">
+          <li>Patch jQuery, Apache, TLS — this week</li>
+          <li>Renew / replace all SSL certificates</li>
+          <li>Close exposed ports (SSH/RDP/MySQL)</li>
+          <li>Deploy server-side encryption</li>
+          <li>Enforce HTTP security headers globally</li>
+        </ul>
+      </div>
+      <div class="gov-card reveal reveal-delay-2">
+        <div class="gov-role">Procurement / Legal</div>
+        <ul class="gov-items">
+          <li>Add cyber insurance clause to supplier RFPs</li>
+          <li>Coordinate bmchatrath.com domain renewal</li>
+          <li>Support phishing domain takedown</li>
+          <li>Finalise UpGuard TPRM contract</li>
+        </ul>
+      </div>
+      <div class="gov-card reveal reveal-delay-3">
+        <div class="gov-role">Finance / HR</div>
+        <ul class="gov-items">
+          <li>Approve cyber insurance upgrade case</li>
+          <li>Support HRIS integration for access deprovisioning</li>
+          <li>Participate in AP wire fraud training</li>
+          <li>Confirm budget allocation for SASE/ZTNA</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<div class="closing">
+  <div class="closing-glow"></div>
+  <blockquote class="closing-quote">
+    Acclime has built <strong>real security foundations.</strong><br>
+    The external threat is <strong>real and active.</strong><br>
+    The window to act before a breach <strong>is now.</strong>
+  </blockquote>
+  <div class="closing-meta">Acclime Group · Cybersecurity Posture Review · March 2026 · Warburg Pincus Portfolio</div>
+</div>
+
+<footer>
+  <p>Acclime Group — Cybersecurity Posture Review · March 2026</p>
+  <p>CONFIDENTIAL — For Executive Leadership & Board Use Only</p>
+  <p>Sources: WP Maturity Self-Assessment · Group-IB Sweep Report · Cybersecurity Initiatives Tracker</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(el => observer.observe(el));
+
+  // Animate maturity bars on scroll
+  const bars = document.querySelectorAll('.maturity-bar');
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.width = e.target.style.width; // trigger repaint
+      }
+    });
+  }, { threshold: 0.5 });
+  bars.forEach(b => {
+    const target = b.style.width;
+    b.style.width = '0%';
+    setTimeout(() => barObserver.observe(b), 100);
+    // Fallback trigger
+    const obs2 = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setTimeout(() => { b.style.width = target; }, 200);
+        obs2.disconnect();
+      }
+    }, { threshold: 0.3 });
+    obs2.observe(b);
+  });
+
+  // Active nav link
+  const sections = document.querySelectorAll('section[id], .section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--white)' : '';
+    });
+  });
+</script>
+</body>
+</html>
